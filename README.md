@@ -11,9 +11,9 @@
 
 | Nama | NRP | Akun GitHub |
 |---|---|---|
-| TULIS_DI_SINI | | |
-| | | |
-| | | |
+| 5025251077 | Bastian Gerry Simangunsong | tianucong |
+| 5025251088 | I Komang Bagus Alvero Wisnawa| M4RUT1 |
+| 5025251099 | Faris Rashid Azizi | abdikeur |
 
 ## Ide dan pembeda
 
