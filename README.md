@@ -32,14 +32,179 @@
 Jelaskan singkat arsitektur aplikasi dan pola desain yang dipakai (mis. Strategy untuk penilaian). Tempel diagram kelas (Mermaid)
 yang cocok dengan kode.
 
-```mermaid
+
 classDiagram
-    class Induk {
-        <<abstract>>
-    }
-    Induk <|-- TurunanA
-    Induk <|-- TurunanB
-```
+direction TB
+
+
+class ManajerSesi {
+    -ISumberSoal _sumber
+    -IPenilaiLangkah _penilai
+    -IPenyimpananProgres _simpan
+    +SoalPecahan SoalAktif
+    +int Skor
+    +event SkorBerubah
+    +event LevelSelesai
+    +event UmpanBalikDiberikan
+    +ManajerSesi(ISumberSoal s, IPenilaiLangkah p, IPenyimpananProgres sp)
+    +MulaiLevel(int nomor) void
+    +IrisBatang(string batang, int faktor) void
+    +GabungBatang(string batang, int faktor) void
+    +JawabSoal() HasilEvaluasi
+    +SoalBerikutnya() void
+}
+
+class LevelBelajar {
+    +int Nomor
+    +string Nama
+    +IReadOnlyList~SoalPecahan~ DaftarSoal
+    +int JumlahSoal
+}
+
+class SoalPecahan {
+    <<abstract>>
+    +string Id
+    +int Level
+    +string Petunjuk
+    +BatangPecahan BatangA
+    #SoalPecahan(string id, int level, BatangPecahan a)
+    +Evaluasi(BatangPecahan jawaban) HasilEvaluasi
+    +BuatPenjelasan(bool benar) string
+    +Nilai(BatangPecahan jawaban, IPenilaiLangkah penilai, int langkah) HasilEvaluasi
+    +ToString() string
+}
+
+class SoalPenyederhanaan {
+    +Evaluasi(BatangPecahan jawaban) HasilEvaluasi
+    +BuatPenjelasan(bool benar) string
+}
+
+class SoalPenjumlahan {
+    +BatangPecahan BatangB
+    +Evaluasi(BatangPecahan jawaban) HasilEvaluasi
+    +BuatPenjelasan(bool benar) string
+}
+
+class SoalPengurangan {
+    +BatangPecahan BatangB
+    +Evaluasi(BatangPecahan jawaban) HasilEvaluasi
+    +BuatPenjelasan(bool benar) string
+}
+
+class BatangPecahan {
+    +int Pembilang
+    +int Penyebut
+    +string LabelWarna
+    +BatangPecahan(int p, int q)
+    +BatangPecahan(int p, int q, string warna)
+    +Iris(string faktor) void
+    +Gabung(int faktor) void
+    +BisaDigabung(int faktor) bool
+    +SudahSederhana() bool
+    +ToString() string
+}
+
+
+class ISumberSoal {
+    <<interface>>
+    +Muat() IReadOnlyList~LevelBelajar~
+}
+
+class IPenilaiLangkah {
+    <<interface>>
+    +Nilai(int langkahDipakai, int langkahMinimal) int
+}
+
+class IPenyimpananProgres {
+    <<interface>>
+    +Simpan(ProgresPemain p) void
+    +Muat() ProgresPemain
+}
+
+class IDisposable {
+    <<interface>>
+}
+
+
+class SumberSoalJson
+class SumberSoalBawaan
+
+class PenilaiBebas
+class PenilaiLangkahMinimal
+
+class PenyimpananJson
+class PenyimpananMemori
+
+
+class ProgresPemain {
+    +IReadOnlyDictionary~int,int~ BintangPerLevel
+    +int SkorTertinggi
+}
+
+class PerekamRiwayatLatihan {
+    -StreamWriter _tulis
+    +Catat(string baris) void
+    +Dispose() void
+}
+
+
+class HasilEvaluasi {
+    +bool Benar
+    +string Pesan
+    +int Poin
+}
+
+
+class Exception
+
+class PotonganBelumSamaException
+class PecahanTidakValidException
+class PenyederhanaanTidakMungkinException
+
+
+ManajerSesi "1" *-- "0..*" LevelBelajar : memiliki
+LevelBelajar "1" *-- "10" SoalPecahan : memiliki
+
+SoalPecahan "1" *-- "1..2" BatangPecahan : memiliki
+
+ManajerSesi ..> HasilEvaluasi : menerima
+SoalPecahan ..> HasilEvaluasi : mengembalikan
+
+
+SoalPenyederhanaan --|> SoalPecahan
+SoalPenjumlahan --|> SoalPecahan
+SoalPengurangan --|> SoalPecahan
+
+
+SumberSoalJson ..|> ISumberSoal
+SumberSoalBawaan ..|> ISumberSoal
+
+PenilaiBebas ..|> IPenilaiLangkah
+PenilaiLangkahMinimal ..|> IPenilaiLangkah
+
+PenyimpananJson ..|> IPenyimpananProgres
+PenyimpananMemori ..|> IPenyimpananProgres
+
+PerekamRiwayatLatihan ..|> IDisposable
+
+ManajerSesi ..> ISumberSoal : DI
+ManajerSesi ..> IPenilaiLangkah : DI
+ManajerSesi ..> IPenyimpananProgres : DI
+
+ManajerSesi ..> ProgresPemain : simpan/muat
+ManajerSesi ..> PerekamRiwayatLatihan : using
+
+
+PotonganBelumSamaException --|> Exception
+PecahanTidakValidException --|> Exception
+PenyederhanaanTidakMungkinException --|> Exception
+
+SoalPenjumlahan ..> PotonganBelumSamaException : throw
+SoalPengurangan ..> PotonganBelumSamaException : throw
+
+BatangPecahan ..> PecahanTidakValidException : throw
+BatangPecahan ..> PenyederhanaanTidakMungkinException : throw
+
 
 TULIS_DI_SINI
 
