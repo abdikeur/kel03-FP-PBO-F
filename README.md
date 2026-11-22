@@ -33,6 +33,8 @@ Jelaskan singkat arsitektur aplikasi dan pola desain yang dipakai (mis. Strategy
 yang cocok dengan kode.
 
 
+
+```mermaid
 classDiagram
 direction TB
 
@@ -204,6 +206,8 @@ SoalPengurangan ..> PotonganBelumSamaException : throw
 
 BatangPecahan ..> PecahanTidakValidException : throw
 BatangPecahan ..> PenyederhanaanTidakMungkinException : throw
+
+```
 
 
 TULIS_DI_SINI
